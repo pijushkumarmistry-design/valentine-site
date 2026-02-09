@@ -6,110 +6,138 @@
 <title>Will You Be My Valentine?</title>
 
 <style>
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: Arial, sans-serif;
   overflow: hidden;
   text-align: center;
+  color: white;
 
-  background-image: url("background.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url("background.jpg") center/cover no-repeat;
 }
 
-/* Dark overlay */
+/* overlay */
 body::before {
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.35);
   z-index: -1;
 }
 
 .container {
-  color: white;
+  width: 90%;
+  max-width: 420px;
 }
 
 h1 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
 }
 
 button {
-  padding: 14px 28px;
+  padding: 14px 24px;
   font-size: 18px;
   margin: 10px;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform .2s;
 }
 
-button:hover {
-  transform: scale(1.1);
-}
+button:hover { transform: scale(1.08); }
 
-#yesBtn {
-  background: #ff4d6d;
-  color: white;
-}
+#yesBtn { background: #ff4d6d; color: white; }
+#noBtn  { background: #555; color: white; position: absolute; }
 
-#noBtn {
-  background: #555;
-  color: white;
-  position: absolute;
-}
-
-.gallery {
-  display: none;
-  margin-top: 20px;
-}
+.gallery { display: none; margin-top: 20px; }
 
 .gallery img {
-  width: 200px;
-  margin: 10px;
+  width: 100%;
+  max-width: 220px;
   border-radius: 12px;
+  margin: 8px;
 }
 
-/* Floating hearts */
+/* floating hearts */
 .hearts {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
-  overflow: hidden;
 }
 
 .heart {
   position: absolute;
   bottom: -20px;
   color: #ff4d6d;
-  font-size: 20px;
   animation: floatUp linear forwards;
-  opacity: 0.8;
 }
 
 @keyframes floatUp {
-  from {
-    transform: translateY(0) scale(1);
-    opacity: 0.9;
-  }
   to {
-    transform: translateY(-110vh) scale(1.5);
+    transform: translateY(-110vh) scale(1.4);
     opacity: 0;
   }
+}
+
+/* confetti */
+.confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 14px;
+  background: hsl(var(--h), 80%, 60%);
+  top: -20px;
+  animation: fall 2.5s linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* hidden message popup */
+#surprise {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  justify-content: center;
+  align-items: center;
+}
+
+#surpriseBox {
+  background: white;
+  color: black;
+  padding: 25px;
+  border-radius: 12px;
+  max-width: 320px;
+}
+
+.tap-note {
+  font-size: 12px;
+  opacity: .8;
 }
 </style>
 </head>
 
 <body>
+
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
 
 <div class="container">
   <h1>Will you be my Valentine? ❤️</h1>
@@ -123,71 +151,83 @@ button:hover {
     <img src="her2.jpg">
     <img src="her3.jpg">
   </div>
+
+  <p class="tap-note">Tap anywhere if music doesn’t start 🎵</p>
 </div>
 
 <div class="hearts"></div>
+<div class="confetti"></div>
+
+<!-- Hidden Surprise -->
+<div id="surprise">
+  <div id="surpriseBox">
+    <h2>For You ❤️</h2>
+    <p>
+      You make my world brighter, calmer, and happier every single day.  
+      Thank you for being you. I love you more than words can say.
+    </p>
+    <button onclick="closeSurprise()">Close</button>
+  </div>
+</div>
 
 <script>
-/* NO button movement */
-let noBtn = document.getElementById("noBtn");
-let yesBtn = document.getElementById("yesBtn");
-let attempts = 0;
+/* MUSIC (mobile requires user interaction) */
+const music = document.getElementById("bgMusic");
+document.body.addEventListener("click", () => {
+  music.play().catch(()=>{});
+}, { once:true });
 
-noBtn.addEventListener("mouseover", moveNoButton);
-noBtn.addEventListener("click", moveNoButton);
+/* NO button logic */
+let noBtn = document.getElementById("noBtn");
+let attempts = 0;
 
 function moveNoButton() {
   attempts++;
+  noBtn.style.left = Math.random()*(window.innerWidth-120)+"px";
+  noBtn.style.top  = Math.random()*(window.innerHeight-60)+"px";
+  if(attempts>6) noBtn.style.display="none";
+}
+noBtn.onmouseover = moveNoButton;
+noBtn.onclick = moveNoButton;
 
-  let x = Math.random() * (window.innerWidth - 120);
-  let y = Math.random() * (window.innerHeight - 60);
+/* YES clicked */
+document.getElementById("yesBtn").onclick = ()=>{
+  document.getElementById("gallery").style.display="block";
+  launchConfetti();
+  setTimeout(()=>document.getElementById("surprise").style.display="flex",1200);
+};
 
-  noBtn.style.left = x + "px";
-  noBtn.style.top = y + "px";
+/* FLOATING HEARTS */
+const hearts = document.querySelector(".hearts");
+setInterval(()=>{
+  let h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="❤";
+  h.style.left=Math.random()*100+"vw";
+  h.style.fontSize=(14+Math.random()*18)+"px";
+  h.style.animationDuration=(4+Math.random()*3)+"s";
+  hearts.appendChild(h);
+  setTimeout(()=>h.remove(),7000);
+},300);
 
-  if (attempts > 6) {
-    noBtn.style.display = "none";
+/* CONFETTI */
+function launchConfetti(){
+  const box=document.querySelector(".confetti");
+  for(let i=0;i<120;i++){
+    let c=document.createElement("div");
+    c.className="confetti-piece";
+    c.style.left=Math.random()*100+"vw";
+    c.style.setProperty("--h",Math.random()*360);
+    c.style.animationDuration=(1.8+Math.random()*1.2)+"s";
+    box.appendChild(c);
+    setTimeout(()=>c.remove(),2600);
   }
 }
 
-/* YES clicked */
-yesBtn.addEventListener("click", function() {
-  document.getElementById("gallery").style.display = "block";
-  sendNotification();
-});
-
-/* Telegram notification */
-function sendNotification() {
-  fetch("https://api.telegram.org/botYOUR_BOT_TOKEN/sendMessage", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: "YOUR_CHAT_ID",
-      text: "She said YES ❤️"
-    })
-  });
+/* surprise close */
+function closeSurprise(){
+  document.getElementById("surprise").style.display="none";
 }
-
-/* Floating hearts generator */
-const heartsContainer = document.querySelector(".hearts");
-
-function createHeart() {
-  const heart = document.createElement("div");
-  heart.classList.add("heart");
-  heart.innerHTML = "❤";
-
-  heart.style.left = Math.random() * 100 + "vw";
-  heart.style.fontSize = (14 + Math.random() * 20) + "px";
-  heart.style.animationDuration = (4 + Math.random() * 4) + "s";
-
-  heartsContainer.appendChild(heart);
-
-  setTimeout(() => {
-    heart.remove();
-  }, 8000);
-}
-
-setInterval(createHeart, 300);
 </script>
 
 </body>
