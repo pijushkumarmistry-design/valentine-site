@@ -183,7 +183,6 @@ button:hover{transform:scale(1.1)}
     <img src="her1.jpg">
     <img src="her2.jpg">
     <img src="her3.jpg">
-    <img src="her4.jpg">
   </div>
 </div>
 
@@ -236,4 +235,15 @@ setInterval(()=>{
 /* CONFETTI */
 function confettiBlast(){
   for(let i=0;i<120;i++){
-    let c=do
+    let c=document.createElement("div");
+    c.className="confetti-piece";
+    c.style.left=Math.random()*100+"vw";
+    c.style.setProperty("--h",Math.random()*360);
+    confetti.appendChild(c);
+    setTimeout(()=>c.remove(),2400);
+  }
+}
+</script>
+
+</body>
+</html>
