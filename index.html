@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will You Be My Valentine?</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  text-align: center;
+
+  background-image: url("background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Dark overlay */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: -1;
+}
+
+.container {
+  color: white;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 14px 28px;
+  font-size: 18px;
+  margin: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+
+#yesBtn {
+  background: #ff4d6d;
+  color: white;
+}
+
+#noBtn {
+  background: #555;
+  color: white;
+  position: absolute;
+}
+
+.gallery {
+  display: none;
+  margin-top: 20px;
+}
+
+.gallery img {
+  width: 200px;
+  margin: 10px;
+  border-radius: 12px;
+}
+
+/* Floating hearts */
+.hearts {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.heart {
+  position: absolute;
+  bottom: -20px;
+  color: #ff4d6d;
+  font-size: 20px;
+  animation: floatUp linear forwards;
+  opacity: 0.8;
+}
+
+@keyframes floatUp {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(-110vh) scale(1.5);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Will you be my Valentine? ❤️</h1>
+
+  <button id="yesBtn">Yes ❤️</button>
+  <button id="noBtn">No 😢</button>
+
+  <div class="gallery" id="gallery">
+    <h2>I knew it ❤️</h2>
+    <img src="her1.jpg">
+    <img src="her2.jpg">
+    <img src="her3.jpg">
+  </div>
+</div>
+
+<div class="hearts"></div>
+
+<script>
+/* NO button movement */
+let noBtn = document.getElementById("noBtn");
+let yesBtn = document.getElementById("yesBtn");
+let attempts = 0;
+
+noBtn.addEventListener("mouseover", moveNoButton);
+noBtn.addEventListener("click", moveNoButton);
+
+function moveNoButton() {
+  attempts++;
+
+  let x = Math.random() * (window.innerWidth - 120);
+  let y = Math.random() * (window.innerHeight - 60);
+
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+
+  if (attempts > 6) {
+    noBtn.style.display = "none";
+  }
+}
+
+/* YES clicked */
+yesBtn.addEventListener("click", function() {
+  document.getElementById("gallery").style.display = "block";
+  sendNotification();
+});
+
+/* Telegram notification */
+function sendNotification() {
+  fetch("https://api.telegram.org/botYOUR_BOT_TOKEN/sendMessage", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: "YOUR_CHAT_ID",
+      text: "She said YES ❤️"
+    })
+  });
+}
+
+/* Floating hearts generator */
+const heartsContainer = document.querySelector(".hearts");
+
+function createHeart() {
+  const heart = document.createElement("div");
+  heart.classList.add("heart");
+  heart.innerHTML = "❤";
+
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.fontSize = (14 + Math.random() * 20) + "px";
+  heart.style.animationDuration = (4 + Math.random() * 4) + "s";
+
+  heartsContainer.appendChild(heart);
+
+  setTimeout(() => {
+    heart.remove();
+  }, 8000);
+}
+
+setInterval(createHeart, 300);
+</script>
+
+</body>
+</html>
