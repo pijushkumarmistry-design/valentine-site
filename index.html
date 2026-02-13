@@ -262,10 +262,21 @@ function renderPage(){
     noBtn.addEventListener("touchstart",(e)=>{e.preventDefault();moveNo();});
 
     yesBtn.onclick=(e)=>{
-      e.stopPropagation();
-      createFirework(innerWidth/2,innerHeight/2);
-      setTimeout(()=>surprise.style.display="flex",700);
-    };
+  e.stopPropagation();
+
+  /* Firework + surprise (UNCHANGED) */
+  createFirework(innerWidth/2,innerHeight/2);
+  setTimeout(()=>surprise.style.display="flex",700);
+
+  /* WhatsApp notification */
+  setTimeout(()=>{
+    window.open(
+      "https://wa.me/919933277460?text=She%20said%20YES%20❤️",
+      "_blank"
+    );
+  },800);
+};
+
   }
 }
 
