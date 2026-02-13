@@ -139,10 +139,10 @@ button{
 <script>
 /* Page Data */
 const pages=[
-  {text:"For You ❤️\nTap to continue", bg:"black", type:true},
-  {text:"Every moment with you feels special ❤️\nTap to continue", bg:"bg1.jpg", type:true},
-  {text:"You make my world brighter and happier every day ❤️\nTap to continue", bg:"bg2.jpg", type:true},
-  {text:null, bg:"bg3.jpg", type:false}
+  {html:`<div>For You ❤️</div><div style="font-size:0.9rem;opacity:.8">Tap to continue</div>`, bg:"black"},
+  {html:`Every moment with you feels special ❤️<div style="font-size:0.9rem;opacity:.8">Tap to continue</div>`, bg:"bg1.jpg"},
+  {html:`You make my world brighter and happier every day ❤️<div style="font-size:0.9rem;opacity:.8">Tap to continue</div>`, bg:"bg2.jpg"},
+  {html:null, bg:"bg3.jpg"}
 ];
 
 let page=0;
@@ -151,21 +151,6 @@ const bgA=document.getElementById("bg1");
 const bgB=document.getElementById("bg2");
 let topBg=bgA;
 let musicStarted=false;
-
-/* Typewriter */
-function typeText(text, el, speed=35){
-  el.innerHTML="";
-  let i=0;
-  function typing(){
-    if(i<text.length){
-      if(text[i]==="\n") el.innerHTML+="<br>";
-      else el.innerHTML+=text[i];
-      i++;
-      setTimeout(typing,speed);
-    }
-  }
-  typing();
-}
 
 /* Render Page */
 function renderPage(){
@@ -177,8 +162,8 @@ function renderPage(){
   topBg.style.opacity=0;
   topBg=nextBg;
 
-  if(p.type){
-    typeText(p.text, content);
+  if(p.html){
+    content.innerHTML=p.html;
   } else {
     content.innerHTML=`
       <div>Will you be my Valentine? ❤️</div>
@@ -192,16 +177,18 @@ function renderPage(){
     const yesBtn=document.getElementById("yesBtn");
 
     let attempts=0;
+
     function moveNo(){
       attempts++;
       noBtn.style.position="absolute";
-      noBtn.style.left=Math.random()*(innerWidth-100)+"px";
-      noBtn.style.top=Math.random()*(innerHeight-50)+"px";
-      if(attempts>6) noBtn.style.display="none";
+      noBtn.style.left=Math.random()*(innerWidth-120)+"px";
+      noBtn.style.top=Math.random()*(innerHeight-70)+"px";
+      if(attempts>=10) noBtn.style.display="none";
     }
 
-    noBtn.onmouseover=moveNo;
-    noBtn.onclick=(e)=>{e.stopPropagation();moveNo();};
+    /* Works on desktop + mobile */
+    noBtn.addEventListener("mouseover", moveNo);
+    noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); moveNo(); });
 
     yesBtn.onclick=(e)=>{
       e.stopPropagation();
@@ -215,13 +202,10 @@ renderPage();
 
 /* Tap Flow */
 document.addEventListener("click",(e)=>{
-
-  /* Start music ONLY first tap on first page */
   if(!musicStarted && page===0){
     document.getElementById("bgMusic").play().catch(()=>{});
     musicStarted=true;
   }
-
   if(page<3){ page++; renderPage(); }
   createFirework(e.clientX,e.clientY);
 });
