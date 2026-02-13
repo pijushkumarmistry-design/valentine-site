@@ -82,6 +82,29 @@ button{
     opacity:0;
   }
 }
+
+/* ---------- CONFETTI ---------- */
+.confetti{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+
+.confetti-piece{
+  position:absolute;
+  width:8px;
+  height:14px;
+  background:hsl(var(--h),80%,60%);
+  top:-20px;
+  animation:fall 2.4s linear forwards;
+}
+
+@keyframes fall{
+  to{
+    transform:translateY(110vh) rotate(720deg);
+    opacity:0;
+  }
+}
 </style>
 </head>
 
@@ -100,12 +123,11 @@ button{
 </div>
 
 <div class="hearts"></div>
+<div class="confetti"></div>
 
 <script>
-/* ---------- MUSIC (Mobile unlock) ---------- */
+/* ---------- MUSIC ---------- */
 const music = document.getElementById("bgMusic");
-
-/* First user interaction starts music */
 document.body.addEventListener("click", ()=>{
   music.play().catch(()=>{});
 }, { once:true });
@@ -126,10 +148,11 @@ noBtn.onclick = moveNo;
 
 /* ---------- YES ---------- */
 document.getElementById("yesBtn").onclick = ()=>{
+  launchConfetti();
   alert("She said YES ❤️");
 };
 
-/* ---------- FLOATING HEARTS ---------- */
+/* ---------- HEARTS ---------- */
 const hearts = document.querySelector(".hearts");
 
 setInterval(()=>{
@@ -142,6 +165,20 @@ setInterval(()=>{
   hearts.appendChild(h);
   setTimeout(()=>h.remove(),7000);
 }, 300);
+
+/* ---------- CONFETTI ---------- */
+function launchConfetti(){
+  const box = document.querySelector(".confetti");
+
+  for(let i=0;i<120;i++){
+    let c = document.createElement("div");
+    c.className = "confetti-piece";
+    c.style.left = Math.random()*100 + "vw";
+    c.style.setProperty("--h", Math.random()*360);
+    box.appendChild(c);
+    setTimeout(()=>c.remove(),2400);
+  }
+}
 </script>
 
 </body>
