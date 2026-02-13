@@ -39,17 +39,18 @@ body{
   position:fixed;
   inset:0;
   display:flex;
+  flex-direction:column;
   justify-content:center;
   align-items:center;
   text-align:center;
   padding:20px;
   font-size:1.5rem;
+  gap:18px;
 }
 
 /* Buttons */
 button{
   padding:14px 24px;
-  margin:10px;
   font-size:18px;
   border:none;
   border-radius:10px;
@@ -57,6 +58,12 @@ button{
 }
 #yesBtn{background:#ff4d6d;color:white;}
 #noBtn{background:#555;color:white;position:absolute;}
+
+.buttonRow{
+  margin-top:12px;
+  display:flex;
+  gap:14px;
+}
 
 /* Hearts + Fireworks */
 .hearts,.fireworks{
@@ -135,12 +142,29 @@ button{
 <script>
 /* ---------- PAGE DATA ---------- */
 const pages=[
-  {text:`For You ❤️<br><br><small>Tap to continue</small>`, bg:"black"},
-  {text:`Every moment with you feels special ❤️<br><br><small>Tap to continue</small>`, bg:"bg1.jpg"},
-  {text:`You make my world brighter and happier every day ❤️<br><br><small>Tap to continue</small>`, bg:"bg2.jpg"},
-  {text:`<h1>Will you be my Valentine? ❤️</h1>
-         <button id="yesBtn">Yes ❤️</button>
-         <button id="noBtn">No 😢</button>`, bg:"bg3.jpg"}
+  {
+    text:`<div>For You ❤️</div>
+          <div style="font-size:0.8rem;opacity:0.8">Tap to continue</div>`,
+    bg:"black"
+  },
+  {
+    text:`Every moment with you feels special ❤️
+          <div style="font-size:0.8rem;opacity:0.8">Tap to continue</div>`,
+    bg:"bg1.jpg"
+  },
+  {
+    text:`You make my world brighter and happier every day ❤️
+          <div style="font-size:0.8rem;opacity:0.8">Tap to continue</div>`,
+    bg:"bg2.jpg"
+  },
+  {
+    text:`<div>Will you be my Valentine? ❤️</div>
+          <div class="buttonRow">
+            <button id="yesBtn">Yes ❤️</button>
+            <button id="noBtn">No 😢</button>
+          </div>`,
+    bg:"bg3.jpg"
+  }
 ];
 
 let page=0;
@@ -153,14 +177,12 @@ let topBg=bgA;
 function renderPage(){
   content.innerHTML=pages[page].text;
 
-  // Background crossfade
-  const nextBg = (topBg===bgA)?bgB:bgA;
+  const nextBg=(topBg===bgA)?bgB:bgA;
   nextBg.style.backgroundImage=`url('${pages[page].bg}')`;
   nextBg.style.opacity=1;
   topBg.style.opacity=0;
   topBg=nextBg;
 
-  // Attach buttons if final page
   if(page===3){
     const noBtn=document.getElementById("noBtn");
     const yesBtn=document.getElementById("yesBtn");
