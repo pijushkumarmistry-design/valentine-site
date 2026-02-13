@@ -57,12 +57,13 @@ button{
   cursor:pointer;
 }
 #yesBtn{background:#ff4d6d;color:white;}
-#noBtn{background:#555;color:white;position:absolute;}
+#noBtn{background:#555;color:white;}
 
 .buttonRow{
-  margin-top:12px;
+  margin-top:18px;
   display:flex;
-  gap:14px;
+  gap:16px;
+  position:relative;
 }
 
 /* Hearts */
@@ -149,6 +150,7 @@ const content=document.getElementById("content");
 const bgA=document.getElementById("bg1");
 const bgB=document.getElementById("bg2");
 let topBg=bgA;
+let musicStarted=false;
 
 /* Typewriter */
 function typeText(text, el, speed=35){
@@ -192,10 +194,12 @@ function renderPage(){
     let attempts=0;
     function moveNo(){
       attempts++;
+      noBtn.style.position="absolute";
       noBtn.style.left=Math.random()*(innerWidth-100)+"px";
       noBtn.style.top=Math.random()*(innerHeight-50)+"px";
       if(attempts>6) noBtn.style.display="none";
     }
+
     noBtn.onmouseover=moveNo;
     noBtn.onclick=(e)=>{e.stopPropagation();moveNo();};
 
@@ -211,7 +215,13 @@ renderPage();
 
 /* Tap Flow */
 document.addEventListener("click",(e)=>{
-  if(page===0) document.getElementById("bgMusic").play().catch(()=>{});
+
+  /* Start music ONLY first tap on first page */
+  if(!musicStarted && page===0){
+    document.getElementById("bgMusic").play().catch(()=>{});
+    musicStarted=true;
+  }
+
   if(page<3){ page++; renderPage(); }
   createFirework(e.clientX,e.clientY);
 });
