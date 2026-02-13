@@ -51,6 +51,30 @@ button{
 </style>
 </head>
 
+/* Floating Hearts */
+.hearts{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.heart{
+  position:absolute;
+  bottom:-20px;
+  color:#ff4d6d;
+  font-size:20px;
+  opacity:0.85;
+  animation:floatUp linear forwards;
+}
+
+@keyframes floatUp{
+  to{
+    transform:translateY(-110vh) scale(1.4);
+    opacity:0;
+  }
+}
+
 <body>
 
 <div class="container">
@@ -76,6 +100,21 @@ noBtn.onclick = moveNo;
 document.getElementById("yesBtn").onclick = ()=>{
   alert("She said YES ❤️");
 };
+/* Floating Hearts Generator */
+const hearts = document.querySelector(".hearts");
+
+setInterval(()=>{
+  let h = document.createElement("div");
+  h.className = "heart";
+  h.innerHTML = "❤";
+  h.style.left = Math.random()*100 + "vw";
+  h.style.fontSize = (14 + Math.random()*18) + "px";
+  h.style.animationDuration = (4 + Math.random()*3) + "s";
+  hearts.appendChild(h);
+
+  setTimeout(()=>h.remove(),7000);
+}, 300);
+
 </script>
 
 </body>
