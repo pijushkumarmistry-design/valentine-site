@@ -151,12 +151,12 @@ document.addEventListener("click", (e)=>{
 });
 
 function createFirework(x,y){
-  for(let i=0;i<32;i++){
+  for(let i=0;i<48;i++){
     let s=document.createElement("div");
     s.className="spark";
 
-    let angle=(i/32)*Math.PI*2;
-    let dist=60+Math.random()*40;
+    let angle=(i/48)*Math.PI*2;
+    let dist=240+Math.random()*120;
 
     s.style.left=x+"px";
     s.style.top=y+"px";
