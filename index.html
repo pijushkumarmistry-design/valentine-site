@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Will You Be My Valentine?</title>
+<title>Will You Be My Valentine? ❤️</title>
 
 <style>
-/* ---------- BODY ---------- */
+*{margin:0;padding:0;box-sizing:border-box}
+
 body{
-  margin:0;
   height:100vh;
   display:flex;
   justify-content:center;
@@ -16,7 +16,7 @@ body{
   font-family:Arial, sans-serif;
   overflow:hidden;
   position:relative;
-
+  color:white;
   background:url("background.jpg") center/cover no-repeat;
 }
 
@@ -29,17 +29,16 @@ body::before{
   z-index:-1;
 }
 
-/* ---------- MAIN ---------- */
+/* Container */
 .container{
   text-align:center;
-  color:white;
 }
 
-/* ---------- BUTTONS ---------- */
+/* Buttons */
 button{
   padding:14px 24px;
-  font-size:18px;
   margin:10px;
+  font-size:18px;
   border:none;
   border-radius:10px;
   cursor:pointer;
@@ -48,7 +47,7 @@ button{
 #yesBtn{ background:#ff4d6d; color:white; }
 #noBtn{ background:#555; color:white; position:absolute; }
 
-/* ---------- HEARTS ---------- */
+/* Hearts */
 .hearts{
   position:fixed;
   inset:0;
@@ -66,7 +65,7 @@ button{
   to{ transform:translateY(-110vh) scale(1.4); opacity:0; }
 }
 
-/* ---------- FIREWORKS ---------- */
+/* Fireworks */
 .fireworks{
   position:fixed;
   inset:0;
@@ -79,12 +78,12 @@ button{
   height:4px;
   border-radius:50%;
   background:hsl(var(--h),90%,60%);
-  animation:explode 1s ease-out forwards;
+  animation:explode 700ms ease-out forwards;
 }
 
 @keyframes explode{
   to{
-    transform:translate(var(--x), var(--y));
+    transform:translate(var(--dx), var(--dy));
     opacity:0;
   }
 }
@@ -93,7 +92,7 @@ button{
 
 <body>
 
-<!-- MUSIC -->
+<!-- Music -->
 <audio id="bgMusic" loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
@@ -102,41 +101,37 @@ button{
   <h1>Will you be my Valentine? ❤️</h1>
   <button id="yesBtn">Yes ❤️</button>
   <button id="noBtn">No 😢</button>
-  <p style="font-size:12px;opacity:0.8;">Tap anywhere if music doesn't start 🎵</p>
+  <p style="font-size:12px;opacity:0.8;">Tap anywhere 🎆 + start music 🎵</p>
 </div>
 
 <div class="hearts"></div>
 <div class="fireworks"></div>
 
 <script>
-/* ---------- MUSIC ---------- */
-const music = document.getElementById("bgMusic");
-document.body.addEventListener("click", ()=>{
-  music.play().catch(()=>{});
-},{once:true});
+/* MUSIC */
+const music=document.getElementById("bgMusic");
+document.body.addEventListener("click",()=>{ music.play().catch(()=>{}); },{once:true});
 
-/* ---------- NO BUTTON ---------- */
-let noBtn = document.getElementById("noBtn");
-let attempts = 0;
+/* NO BUTTON */
+let attempts=0;
+const noBtn=document.getElementById("noBtn");
 
 function moveNo(){
   attempts++;
-  noBtn.style.left = Math.random()*(window.innerWidth-100)+"px";
-  noBtn.style.top  = Math.random()*(window.innerHeight-50)+"px";
+  noBtn.style.left=Math.random()*(innerWidth-100)+"px";
+  noBtn.style.top=Math.random()*(innerHeight-50)+"px";
   if(attempts>6) noBtn.style.display="none";
 }
-noBtn.onmouseover = moveNo;
-noBtn.onclick = moveNo;
+noBtn.onmouseover=moveNo;
+noBtn.onclick=moveNo;
 
-/* ---------- YES CLICK → FIREWORKS ---------- */
-document.getElementById("yesBtn").onclick = ()=>{
-  launchFireworks();
+/* YES CLICK */
+document.getElementById("yesBtn").onclick=()=>{
   alert("She said YES ❤️");
 };
 
-/* ---------- FLOATING HEARTS ---------- */
-const hearts = document.querySelector(".hearts");
-
+/* FLOATING HEARTS */
+const hearts=document.querySelector(".hearts");
 setInterval(()=>{
   let h=document.createElement("div");
   h.className="heart";
@@ -148,30 +143,29 @@ setInterval(()=>{
   setTimeout(()=>h.remove(),7000);
 },300);
 
-/* ---------- FIREWORK FUNCTION ---------- */
-function launchFireworks(){
-  const box=document.querySelector(".fireworks");
+/* FIREWORKS ON TAP */
+const fw=document.querySelector(".fireworks");
 
-  for(let burst=0; burst<6; burst++){
-    let cx=Math.random()*window.innerWidth;
-    let cy=Math.random()*window.innerHeight*0.6;
+document.addEventListener("click", (e)=>{
+  createFirework(e.clientX, e.clientY);
+});
 
-    for(let i=0;i<40;i++){
-      let s=document.createElement("div");
-      s.className="spark";
+function createFirework(x,y){
+  for(let i=0;i<32;i++){
+    let s=document.createElement("div");
+    s.className="spark";
 
-      let angle=(i/40)*Math.PI*2;
-      let dist=60+Math.random()*50;
+    let angle=(i/32)*Math.PI*2;
+    let dist=60+Math.random()*40;
 
-      s.style.left=cx+"px";
-      s.style.top=cy+"px";
-      s.style.setProperty("--x", Math.cos(angle)*dist+"px");
-      s.style.setProperty("--y", Math.sin(angle)*dist+"px");
-      s.style.setProperty("--h", Math.random()*360);
+    s.style.left=x+"px";
+    s.style.top=y+"px";
+    s.style.setProperty("--dx", Math.cos(angle)*dist+"px");
+    s.style.setProperty("--dy", Math.sin(angle)*dist+"px");
+    s.style.setProperty("--h", Math.random()*360);
 
-      box.appendChild(s);
-      setTimeout(()=>s.remove(),1000);
-    }
+    fw.appendChild(s);
+    setTimeout(()=>s.remove(),700);
   }
 }
 </script>
