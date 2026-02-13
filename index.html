@@ -253,13 +253,13 @@ function renderPage(){
   attempts++;
   noBtn.style.position="absolute";
 
-  /* keep button fully inside visible screen */
-  const margin = 12;
-  const btnW = noBtn.offsetWidth || 120;
-  const btnH = noBtn.offsetHeight || 48;
+  /* Mobile-safe limits */
+  const margin = 16;
+  const btnW = 120;
+  const btnH = 48;
 
   const maxX = window.innerWidth - btnW - margin;
-  const maxY = window.innerHeight - btnH - margin;
+  const maxY = window.innerHeight - btnH - 80; // bottom safe buffer
 
   const x = Math.max(margin, Math.random() * maxX);
   const y = Math.max(margin, Math.random() * maxY);
@@ -270,6 +270,7 @@ function renderPage(){
   showCuteMessage();
   if(attempts>=10) noBtn.style.display="none";
 }
+
 
 
     noBtn.addEventListener("mouseover", moveNo);
