@@ -30,9 +30,7 @@ body::before{
 }
 
 /* Container */
-.container{
-  text-align:center;
-}
+.container{ text-align:center; }
 
 /* Buttons */
 button{
@@ -43,56 +41,61 @@ button{
   border-radius:10px;
   cursor:pointer;
 }
-
 #yesBtn{ background:#ff4d6d; color:white; }
 #noBtn{ background:#555; color:white; position:absolute; }
 
 /* Hearts */
-.hearts{
+.hearts,.fireworks{
   position:fixed;
   inset:0;
   pointer-events:none;
 }
-
 .heart{
   position:absolute;
   bottom:-20px;
   color:#ff4d6d;
   animation:floatUp linear forwards;
 }
-
 @keyframes floatUp{
   to{ transform:translateY(-110vh) scale(1.4); opacity:0; }
 }
 
 /* Fireworks */
-.fireworks{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-}
-
 .spark{
   position:absolute;
-  width:4px;
-  height:4px;
+  width:6px;
+  height:6px;
   border-radius:50%;
   background:hsl(var(--h),90%,60%);
-  animation:explode 700ms ease-out forwards;
+  animation:explode 900ms ease-out forwards;
+}
+@keyframes explode{
+  to{ transform:translate(var(--dx),var(--dy)); opacity:0; }
 }
 
-@keyframes explode{
-  to{
-    transform:translate(var(--dx), var(--dy));
-    opacity:0;
-  }
+/* Surprise Popup */
+#surprise{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.8);
+  justify-content:center;
+  align-items:center;
+  z-index:5;
+}
+#surpriseBox{
+  background:white;
+  color:black;
+  padding:24px;
+  border-radius:12px;
+  max-width:320px;
+  text-align:center;
 }
 </style>
 </head>
 
 <body>
 
-<!-- Music -->
 <audio id="bgMusic" loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
@@ -107,6 +110,18 @@ button{
 <div class="hearts"></div>
 <div class="fireworks"></div>
 
+<!-- Hidden Surprise -->
+<div id="surprise">
+  <div id="surpriseBox">
+    <h2>For You ❤️</h2>
+    <p>
+      You make my world brighter, calmer and happier every day.  
+      Thank you for being in my life. I love you ❤️
+    </p>
+    <button onclick="closeSurprise()">Close</button>
+  </div>
+</div>
+
 <script>
 /* MUSIC */
 const music=document.getElementById("bgMusic");
@@ -115,7 +130,6 @@ document.body.addEventListener("click",()=>{ music.play().catch(()=>{}); },{once
 /* NO BUTTON */
 let attempts=0;
 const noBtn=document.getElementById("noBtn");
-
 function moveNo(){
   attempts++;
   noBtn.style.left=Math.random()*(innerWidth-100)+"px";
@@ -127,10 +141,11 @@ noBtn.onclick=moveNo;
 
 /* YES CLICK */
 document.getElementById("yesBtn").onclick=()=>{
-  alert("She said YES ❤️");
+  createFirework(innerWidth/2, innerHeight/2);
+  setTimeout(()=>document.getElementById("surprise").style.display="flex",700);
 };
 
-/* FLOATING HEARTS */
+/* HEARTS */
 const hearts=document.querySelector(".hearts");
 setInterval(()=>{
   let h=document.createElement("div");
@@ -145,28 +160,29 @@ setInterval(()=>{
 
 /* FIREWORKS ON TAP */
 const fw=document.querySelector(".fireworks");
-
-document.addEventListener("click", (e)=>{
-  createFirework(e.clientX, e.clientY);
+document.addEventListener("click",(e)=>{
+  createFirework(e.clientX,e.clientY);
 });
 
 function createFirework(x,y){
   for(let i=0;i<48;i++){
     let s=document.createElement("div");
     s.className="spark";
-
     let angle=(i/48)*Math.PI*2;
-    let dist=240+Math.random()*120;
-
+    let dist=120+Math.random()*60;
     s.style.left=x+"px";
     s.style.top=y+"px";
-    s.style.setProperty("--dx", Math.cos(angle)*dist+"px");
-    s.style.setProperty("--dy", Math.sin(angle)*dist+"px");
-    s.style.setProperty("--h", Math.random()*360);
-
+    s.style.setProperty("--dx",Math.cos(angle)*dist+"px");
+    s.style.setProperty("--dy",Math.sin(angle)*dist+"px");
+    s.style.setProperty("--h",Math.random()*360);
     fw.appendChild(s);
-    setTimeout(()=>s.remove(),700);
+    setTimeout(()=>s.remove(),900);
   }
+}
+
+/* CLOSE POPUP */
+function closeSurprise(){
+  document.getElementById("surprise").style.display="none";
 }
 </script>
 
