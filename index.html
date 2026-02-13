@@ -66,6 +66,21 @@ button{
   position:relative;
 }
 
+/* Cute message popup */
+#cuteMsg{
+  position:fixed;
+  bottom:18%;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:1rem;
+  background:rgba(0,0,0,0.6);
+  padding:8px 14px;
+  border-radius:8px;
+  opacity:0;
+  transition:opacity .3s;
+  pointer-events:none;
+}
+
 /* Hearts */
 .hearts,.fireworks{
   position:fixed;
@@ -121,6 +136,8 @@ button{
 
 <div class="center" id="content"></div>
 
+<div id="cuteMsg"></div>
+
 <audio id="bgMusic" loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
@@ -139,23 +156,49 @@ button{
 <script>
 /* Page Data */
 const pages=[
-  {html:`<div>For You ❤️</div><div style="font-size:0.9rem;opacity:.8">Tap to continue</div>`, bg:"black"},
-  {html:`Every moment with you feels special ❤️<div style="font-size:0.9rem;opacity:.8">Tap to continue</div>`, bg:"bg1.jpg"},
-  {html:`You make my world brighter and happier every day ❤️<div style="font-size:0.9rem;opacity:.8">Tap to continue</div>`, bg:"bg2.jpg"},
+  {html:`<div>For You ❤️</div><div style="font-size:.9rem;opacity:.8">Tap to continue</div>`, bg:"black"},
+  {html:`Every moment with you feels special ❤️<div style="font-size:.9rem;opacity:.8">Tap to continue</div>`, bg:"bg1.jpg"},
+  {html:`You make my world brighter and happier every day ❤️<div style="font-size:.9rem;opacity:.8">Tap to continue</div>`, bg:"bg2.jpg"},
   {html:null, bg:"bg3.jpg"}
 ];
 
 let page=0;
+let musicStarted=false;
 const content=document.getElementById("content");
 const bgA=document.getElementById("bg1");
 const bgB=document.getElementById("bg2");
 let topBg=bgA;
-let musicStarted=false;
+
+/* Cute messages */
+const cuteMessages=[
+  "Hey! That’s not an option 😌",
+  "No? Try again 😏",
+  "You can’t escape love ❤️",
+  "Nice try 😜",
+  "Are you sure about that? 😉",
+  "The answer is YES 😌",
+  "Come onnn 😄",
+  "You know you want to 💕",
+  "Don’t be shy 😘",
+  "No button is broken 😆"
+];
+let lastMsg=-1;
+
+function showCuteMessage(){
+  let idx;
+  do{ idx=Math.floor(Math.random()*cuteMessages.length); }
+  while(idx===lastMsg);
+  lastMsg=idx;
+
+  const el=document.getElementById("cuteMsg");
+  el.textContent=cuteMessages[idx];
+  el.style.opacity=1;
+  setTimeout(()=>el.style.opacity=0,1500);
+}
 
 /* Render Page */
 function renderPage(){
   const p=pages[page];
-
   const nextBg=(topBg===bgA)?bgB:bgA;
   nextBg.style.backgroundImage=`url('${p.bg}')`;
   nextBg.style.opacity=1;
@@ -175,7 +218,6 @@ function renderPage(){
 
     const noBtn=document.getElementById("noBtn");
     const yesBtn=document.getElementById("yesBtn");
-
     let attempts=0;
 
     function moveNo(){
@@ -183,12 +225,12 @@ function renderPage(){
       noBtn.style.position="absolute";
       noBtn.style.left=Math.random()*(innerWidth-120)+"px";
       noBtn.style.top=Math.random()*(innerHeight-70)+"px";
+      showCuteMessage();
       if(attempts>=10) noBtn.style.display="none";
     }
 
-    /* Works on desktop + mobile */
     noBtn.addEventListener("mouseover", moveNo);
-    noBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); moveNo(); });
+    noBtn.addEventListener("touchstart",(e)=>{e.preventDefault();moveNo();});
 
     yesBtn.onclick=(e)=>{
       e.stopPropagation();
