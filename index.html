@@ -16,7 +16,7 @@ body{
   background:black;
 }
 
-/* ---------- BACKGROUND CROSSFADE ---------- */
+/* Background crossfade */
 .bg{
   position:fixed;
   inset:0;
@@ -34,7 +34,7 @@ body{
   z-index:-1;
 }
 
-/* ---------- CONTENT ---------- */
+/* Content */
 .center{
   position:fixed;
   inset:0;
@@ -65,7 +65,7 @@ button{
   gap:14px;
 }
 
-/* Hearts + Fireworks */
+/* Hearts */
 .hearts,.fireworks{
   position:fixed;
   inset:0;
@@ -114,15 +114,12 @@ button{
 
 <body>
 
-<!-- Background layers -->
 <div id="bg1" class="bg"></div>
 <div id="bg2" class="bg"></div>
 <div class="overlay"></div>
 
-<!-- Content -->
 <div class="center" id="content"></div>
 
-<!-- MUSIC -->
 <audio id="bgMusic" loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
@@ -130,7 +127,6 @@ button{
 <div class="hearts"></div>
 <div class="fireworks"></div>
 
-<!-- SURPRISE -->
 <div id="surprise">
   <div id="box">
     <h2>For You ❤️</h2>
@@ -140,31 +136,12 @@ button{
 </div>
 
 <script>
-/* ---------- PAGE DATA ---------- */
+/* Page Data */
 const pages=[
-  {
-    text:`<div>For You ❤️</div>
-          <div style="font-size:0.8rem;opacity:0.8">Tap to continue</div>`,
-    bg:"black"
-  },
-  {
-    text:`Every moment with you feels special ❤️
-          <div style="font-size:0.8rem;opacity:0.8">Tap to continue</div>`,
-    bg:"bg1.jpg"
-  },
-  {
-    text:`You make my world brighter and happier every day ❤️
-          <div style="font-size:0.8rem;opacity:0.8">Tap to continue</div>`,
-    bg:"bg2.jpg"
-  },
-  {
-    text:`<div>Will you be my Valentine? ❤️</div>
-          <div class="buttonRow">
-            <button id="yesBtn">Yes ❤️</button>
-            <button id="noBtn">No 😢</button>
-          </div>`,
-    bg:"bg3.jpg"
-  }
+  {text:"For You ❤️\nTap to continue", bg:"black", type:true},
+  {text:"Every moment with you feels special ❤️\nTap to continue", bg:"bg1.jpg", type:true},
+  {text:"You make my world brighter and happier every day ❤️\nTap to continue", bg:"bg2.jpg", type:true},
+  {text:null, bg:"bg3.jpg", type:false}
 ];
 
 let page=0;
@@ -173,17 +150,42 @@ const bgA=document.getElementById("bg1");
 const bgB=document.getElementById("bg2");
 let topBg=bgA;
 
-/* ---------- RENDER PAGE ---------- */
+/* Typewriter */
+function typeText(text, el, speed=35){
+  el.innerHTML="";
+  let i=0;
+  function typing(){
+    if(i<text.length){
+      if(text[i]==="\n") el.innerHTML+="<br>";
+      else el.innerHTML+=text[i];
+      i++;
+      setTimeout(typing,speed);
+    }
+  }
+  typing();
+}
+
+/* Render Page */
 function renderPage(){
-  content.innerHTML=pages[page].text;
+  const p=pages[page];
 
   const nextBg=(topBg===bgA)?bgB:bgA;
-  nextBg.style.backgroundImage=`url('${pages[page].bg}')`;
+  nextBg.style.backgroundImage=`url('${p.bg}')`;
   nextBg.style.opacity=1;
   topBg.style.opacity=0;
   topBg=nextBg;
 
-  if(page===3){
+  if(p.type){
+    typeText(p.text, content);
+  } else {
+    content.innerHTML=`
+      <div>Will you be my Valentine? ❤️</div>
+      <div class="buttonRow">
+        <button id="yesBtn">Yes ❤️</button>
+        <button id="noBtn">No 😢</button>
+      </div>
+    `;
+
     const noBtn=document.getElementById("noBtn");
     const yesBtn=document.getElementById("yesBtn");
 
@@ -207,14 +209,14 @@ function renderPage(){
 
 renderPage();
 
-/* ---------- TAP FLOW ---------- */
+/* Tap Flow */
 document.addEventListener("click",(e)=>{
   if(page===0) document.getElementById("bgMusic").play().catch(()=>{});
   if(page<3){ page++; renderPage(); }
   createFirework(e.clientX,e.clientY);
 });
 
-/* ---------- HEARTS ---------- */
+/* Hearts */
 const hearts=document.querySelector(".hearts");
 setInterval(()=>{
   let h=document.createElement("div");
@@ -227,7 +229,7 @@ setInterval(()=>{
   setTimeout(()=>h.remove(),7000);
 },300);
 
-/* ---------- FIREWORKS ---------- */
+/* Fireworks */
 const fw=document.querySelector(".fireworks");
 function createFirework(x,y){
   for(let i=0;i<48;i++){
