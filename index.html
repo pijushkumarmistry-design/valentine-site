@@ -14,19 +14,10 @@ body{
   overflow:hidden;
   color:white;
   position:relative;
-  background:url("background.jpg") center/cover no-repeat;
+  background:black;
 }
 
-/* Dark overlay */
-body::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  z-index:-1;
-}
-
-/* ---------- CINEMATIC INTRO ---------- */
+/* ---------- INTRO SCREEN ---------- */
 #intro{
   position:fixed;
   inset:0;
@@ -36,28 +27,49 @@ body::before{
   align-items:center;
   font-size:2rem;
   letter-spacing:2px;
-  z-index:10;
-  animation:introFade 2.5s ease forwards;
-  animation-delay:2.2s;
-}
-@keyframes introFade{
-  to{opacity:0;visibility:hidden;}
+  z-index:20;
+  animation:fadeOut 2s ease forwards;
+  animation-delay:2s;
 }
 
-/* ---------- MAIN CONTENT ---------- */
-.container{
-  height:100vh;
+/* ---------- MESSAGE SCREEN ---------- */
+#message{
+  position:fixed;
+  inset:0;
+  background:url("message-bg.jpg") center/cover no-repeat;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  font-size:1.6rem;
+  padding:20px;
+  opacity:0;
+  z-index:15;
+  animation:showMessage 2s ease forwards;
+  animation-delay:2.5s;
+}
+
+/* ---------- MAIN SCREEN ---------- */
+#main{
+  position:fixed;
+  inset:0;
+  background:url("background.jpg") center/cover no-repeat;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
   text-align:center;
   opacity:0;
-  animation:contentReveal 1.5s ease forwards;
-  animation-delay:2.8s;
+  animation:showMain 2s ease forwards;
+  animation-delay:6s;
 }
-@keyframes contentReveal{
-  to{opacity:1;}
+
+/* Dark overlay */
+.overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  z-index:-1;
 }
 
 /* Buttons */
@@ -78,12 +90,14 @@ button{
   inset:0;
   pointer-events:none;
 }
+
 .heart{
   position:absolute;
   bottom:-20px;
   color:#ff4d6d;
   animation:floatUp linear forwards;
 }
+
 @keyframes floatUp{
   to{transform:translateY(-110vh) scale(1.4);opacity:0;}
 }
@@ -100,7 +114,7 @@ button{
   to{transform:translate(var(--dx),var(--dy));opacity:0;}
 }
 
-/* Surprise Popup */
+/* Surprise popup */
 #surprise{
   display:none;
   position:fixed;
@@ -117,30 +131,47 @@ button{
   max-width:320px;
   text-align:center;
 }
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes fadeOut{ to{opacity:0;visibility:hidden;} }
+@keyframes showMessage{ to{opacity:1;} }
+@keyframes showMain{ to{opacity:1;} }
+
 </style>
 </head>
 
 <body>
 
-<!-- Cinematic Intro -->
+<!-- INTRO -->
 <div id="intro">For You ❤️</div>
 
-<!-- Music -->
-<audio id="bgMusic" loop>
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
+<!-- MESSAGE SCREEN -->
+<div id="message">
+  <div class="overlay"></div>
+  <div>
+    Every moment with you feels special.<br>
+    Today I want to ask you something... ❤️
+  </div>
+</div>
 
-<div class="container">
+<!-- MAIN PAGE -->
+<div id="main">
+  <div class="overlay"></div>
   <h1>Will you be my Valentine? ❤️</h1>
   <button id="yesBtn">Yes ❤️</button>
   <button id="noBtn">No 😢</button>
   <p style="font-size:12px;opacity:0.75;">Tap anywhere 🎆 + start music 🎵</p>
 </div>
 
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
 <div class="hearts"></div>
 <div class="fireworks"></div>
 
-<!-- Surprise -->
+<!-- SURPRISE -->
 <div id="surprise">
   <div id="box">
     <h2>For You ❤️</h2>
