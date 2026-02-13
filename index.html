@@ -8,31 +8,29 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
-html,body{
-  height:100%;
-  overflow:hidden;
+body{
+  height:100vh;
   font-family:Arial, sans-serif;
+  overflow:hidden;
   color:white;
-  background:#000;
+  background:black;
 }
 
-/* Background layers */
+/* Background crossfade */
 .bg{
   position:fixed;
   inset:0;
   background-size:cover;
   background-position:center;
-  background-repeat:no-repeat;
-  transition:opacity .9s ease;
-  background-color:#000; /* fallback if image fails */
+  transition:opacity 0.9s ease;
 }
-#bg1{z-index:-3;opacity:1}
-#bg2{z-index:-2;opacity:0}
+#bg1{z-index:-3; opacity:1;}
+#bg2{z-index:-2; opacity:0;}
 
 .overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.45);
+  background:rgba(0,0,0,0.45);
   z-index:-1;
 }
 
@@ -46,61 +44,86 @@ html,body{
   align-items:center;
   text-align:center;
   padding:20px;
-  font-size:clamp(1.2rem,3vw,1.6rem);
+  font-size:1.5rem;
   gap:18px;
 }
 
 /* Buttons */
 button{
   padding:14px 24px;
-  font-size:1rem;
+  font-size:18px;
   border:none;
-  border-radius:12px;
+  border-radius:10px;
   cursor:pointer;
 }
-#yesBtn{background:#ff4d6d;color:white}
-#noBtn{background:#555;color:white}
+#yesBtn{background:#ff4d6d;color:white;}
+#noBtn{background:#555;color:white;}
 
-.buttonRow{display:flex;gap:14px;margin-top:18px}
+.buttonRow{
+  margin-top:18px;
+  display:flex;
+  gap:16px;
+  position:relative;
+}
 
-/* Cute message */
+/* Cute message popup */
 #cuteMsg{
   position:fixed;
   bottom:18%;
   left:50%;
   transform:translateX(-50%);
-  font-size:.9rem;
-  background:rgba(0,0,0,.6);
+  font-size:1rem;
+  background:rgba(0,0,0,0.6);
   padding:8px 14px;
   border-radius:8px;
   opacity:0;
-  transition:opacity .25s;
+  transition:opacity .3s;
+  pointer-events:none;
 }
 
-/* Hearts & Fireworks */
-.hearts,.fireworks{position:fixed;inset:0;pointer-events:none}
+/* Hearts */
+.hearts,.fireworks{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+.heart{
+  position:absolute;
+  bottom:-20px;
+  color:#ff4d6d;
+  animation:floatUp linear forwards;
+}
+@keyframes floatUp{
+  to{transform:translateY(-110vh) scale(1.4);opacity:0;}
+}
 
-.heart{position:absolute;bottom:-20px;color:#ff4d6d;animation:floatUp linear forwards}
-@keyframes floatUp{to{transform:translateY(-110vh) scale(1.4);opacity:0}}
-
+/* Fireworks */
 .spark{
   position:absolute;
-  width:5px;height:5px;border-radius:50%;
+  width:6px;height:6px;
+  border-radius:50%;
   background:hsl(var(--h),90%,60%);
-  animation:explode .85s ease-out forwards
+  animation:explode 900ms ease-out forwards;
 }
-@keyframes explode{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+@keyframes explode{
+  to{transform:translate(var(--dx),var(--dy));opacity:0;}
+}
 
 /* Surprise */
 #surprise{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.85);
-  justify-content:center;align-items:center;
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  justify-content:center;
+  align-items:center;
 }
 #box{
-  background:white;color:black;
-  padding:22px;border-radius:12px;
-  max-width:320px;text-align:center;
+  background:white;
+  color:black;
+  padding:24px;
+  border-radius:12px;
+  max-width:320px;
 }
 </style>
 </head>
@@ -112,6 +135,7 @@ button{
 <div class="overlay"></div>
 
 <div class="center" id="content"></div>
+
 <div id="cuteMsg"></div>
 
 <audio id="bgMusic" loop>
@@ -123,60 +147,67 @@ button{
 
 <div id="surprise">
   <div id="box">
-    <h3>For You ❤️</h3>
-    <p>I love you ❤️</p>
+    <h2>For You ❤️</h2>
+    <p>I love you more than words can say ❤️</p>
     <button onclick="surprise.style.display='none'">Close</button>
   </div>
 </div>
 
 <script>
-/* ---------- IMAGE PRELOAD ---------- */
-const images=["bg1.jpg","bg2.jpg","bg3.jpg"];
-images.forEach(src=>{
-  const img=new Image();
-  img.src=src;
-  img.onerror=()=>console.error("Missing image:",src);
-});
-
-/* ---------- PAGES ---------- */
+/* Page Data */
 const pages=[
-  {html:`<div>For You ❤️</div><div style="opacity:.75;font-size:.9rem">Tap to continue</div>`, bg:"bg1.jpg"},
-  {html:`Every moment with you feels special ❤️<div style="opacity:.75;font-size:.9rem">Tap to continue</div>`, bg:"bg2.jpg"},
-  {html:`You make my world brighter and happier every day ❤️<div style="opacity:.75;font-size:.9rem">Tap to continue</div>`, bg:"bg3.jpg"},
+  {html:`<div>For You ❤️</div><div style="font-size:.9rem;opacity:.8">Tap to continue</div>`, bg:"black"},
+  {html:`Every moment with you feels special ❤️<div style="font-size:.9rem;opacity:.8">Tap to continue</div>`, bg:"bg1.jpg"},
+  {html:`You make my world brighter and happier every day ❤️<div style="font-size:.9rem;opacity:.8">Tap to continue</div>`, bg:"bg2.jpg"},
   {html:null, bg:"bg3.jpg"}
 ];
 
-let page=0, musicStarted=false;
+let page=0;
+let musicStarted=false;
 const content=document.getElementById("content");
 const bgA=document.getElementById("bg1");
 const bgB=document.getElementById("bg2");
 let topBg=bgA;
 
-/* ---------- CUTE MSG ---------- */
-const msgs=["Nice try 😌","Are you sure? 😉","You can’t escape 😄","Try again 😜","Come on ❤️"];
-let last=-1;
-function showMsg(){
-  let i; do{i=Math.floor(Math.random()*msgs.length)}while(i===last);
-  last=i;
+/* Cute messages */
+const cuteMessages=[
+  "Hey! That’s not an option 😌",
+  "No? Try again 😏",
+  "You can’t escape love ❤️",
+  "Nice try 😜",
+  "Are you sure about that? 😉",
+  "The answer is YES 😌",
+  "Come onnn 😄",
+  "You know you want to 💕",
+  "Don’t be shy 😘",
+  "No button is broken 😆"
+];
+let lastMsg=-1;
+
+function showCuteMessage(){
+  let idx;
+  do{ idx=Math.floor(Math.random()*cuteMessages.length); }
+  while(idx===lastMsg);
+  lastMsg=idx;
+
   const el=document.getElementById("cuteMsg");
-  el.textContent=msgs[i];
+  el.textContent=cuteMessages[idx];
   el.style.opacity=1;
-  setTimeout(()=>el.style.opacity=0,1300);
+  setTimeout(()=>el.style.opacity=0,1500);
 }
 
-/* ---------- RENDER ---------- */
-function render(){
+/* Render Page */
+function renderPage(){
   const p=pages[page];
-  const next=(topBg===bgA)?bgB:bgA;
-
-  next.style.backgroundImage=`url('${p.bg}')`;
-  next.style.opacity=1;
+  const nextBg=(topBg===bgA)?bgB:bgA;
+  nextBg.style.backgroundImage=`url('${p.bg}')`;
+  nextBg.style.opacity=1;
   topBg.style.opacity=0;
-  topBg=next;
+  topBg=nextBg;
 
   if(p.html){
     content.innerHTML=p.html;
-  }else{
+  } else {
     content.innerHTML=`
       <div>Will you be my Valentine? ❤️</div>
       <div class="buttonRow">
@@ -187,54 +218,68 @@ function render(){
 
     const noBtn=document.getElementById("noBtn");
     const yesBtn=document.getElementById("yesBtn");
-    let tries=0;
+    let attempts=0;
 
     function moveNo(){
-      tries++;
-      noBtn.style.position="fixed";
-      noBtn.style.left=Math.random()*(window.innerWidth-140)+"px";
-      noBtn.style.top=Math.random()*(window.innerHeight-80)+"px";
-      showMsg();
-      if(tries>=10) noBtn.style.display="none";
+      attempts++;
+      noBtn.style.position="absolute";
+      noBtn.style.left=Math.random()*(innerWidth-120)+"px";
+      noBtn.style.top=Math.random()*(innerHeight-70)+"px";
+      showCuteMessage();
+      if(attempts>=10) noBtn.style.display="none";
     }
 
-    noBtn.onmouseover=moveNo;
-    noBtn.ontouchstart=(e)=>{e.preventDefault();moveNo()};
+    noBtn.addEventListener("mouseover", moveNo);
+    noBtn.addEventListener("touchstart",(e)=>{e.preventDefault();moveNo();});
 
     yesBtn.onclick=(e)=>{
       e.stopPropagation();
-      fire(window.innerWidth/2,window.innerHeight/2);
-      setTimeout(()=>surprise.style.display="flex",600);
+      createFirework(innerWidth/2,innerHeight/2);
+      setTimeout(()=>surprise.style.display="flex",700);
     };
   }
 }
-render();
 
-/* ---------- TAP ---------- */
-document.addEventListener("pointerdown",(e)=>{
+renderPage();
+
+/* Tap Flow */
+document.addEventListener("click",(e)=>{
   if(!musicStarted && page===0){
     document.getElementById("bgMusic").play().catch(()=>{});
     musicStarted=true;
   }
-  if(page<3){page++;render()}
-  fire(e.clientX,e.clientY);
+  if(page<3){ page++; renderPage(); }
+  createFirework(e.clientX,e.clientY);
 });
 
-/* ---------- FIREWORK ---------- */
+/* Hearts */
+const hearts=document.querySelector(".hearts");
+setInterval(()=>{
+  let h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="❤";
+  h.style.left=Math.random()*100+"vw";
+  h.style.fontSize=(14+Math.random()*18)+"px";
+  h.style.animationDuration=(4+Math.random()*3)+"s";
+  hearts.appendChild(h);
+  setTimeout(()=>h.remove(),7000);
+},300);
+
+/* Fireworks */
 const fw=document.querySelector(".fireworks");
-function fire(x,y){
-  for(let i=0;i<30;i++){
+function createFirework(x,y){
+  for(let i=0;i<48;i++){
     let s=document.createElement("div");
     s.className="spark";
-    let a=(i/30)*Math.PI*2;
-    let d=100+Math.random()*40;
+    let angle=(i/48)*Math.PI*2;
+    let dist=120+Math.random()*60;
     s.style.left=x+"px";
     s.style.top=y+"px";
-    s.style.setProperty("--dx",Math.cos(a)*d+"px");
-    s.style.setProperty("--dy",Math.sin(a)*d+"px");
+    s.style.setProperty("--dx",Math.cos(angle)*dist+"px");
+    s.style.setProperty("--dy",Math.sin(angle)*dist+"px");
     s.style.setProperty("--h",Math.random()*360);
     fw.appendChild(s);
-    setTimeout(()=>s.remove(),850);
+    setTimeout(()=>s.remove(),900);
   }
 }
 </script>
