@@ -13,12 +13,29 @@ body{
   font-family:Arial, sans-serif;
   overflow:hidden;
   color:white;
-  position:relative;
   background:black;
 }
 
-/* Pages */
-.page{
+/* ---------- BACKGROUND CROSSFADE ---------- */
+.bg{
+  position:fixed;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  transition:opacity 0.9s ease;
+}
+#bg1{z-index:-3; opacity:1;}
+#bg2{z-index:-2; opacity:0;}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  z-index:-1;
+}
+
+/* ---------- CONTENT ---------- */
+.center{
   position:fixed;
   inset:0;
   display:flex;
@@ -26,20 +43,7 @@ body{
   align-items:center;
   text-align:center;
   padding:20px;
-}
-
-.hidden{display:none}
-
-/* Backgrounds */
-#page2{background:url("bg1.jpg") center/cover no-repeat;}
-#page3{background:url("bg2.jpg") center/cover no-repeat;}
-#page4{background:url("bg3.jpg") center/cover no-repeat;}
-
-.overlay{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,0.45);
-  z-index:-1;
+  font-size:1.5rem;
 }
 
 /* Buttons */
@@ -103,38 +107,13 @@ button{
 
 <body>
 
-<!-- PAGE 1 -->
-<div id="page1" class="page">
-  <h1>For You ❤️<br><br><small>Tap to continue</small></h1>
-</div>
+<!-- Background layers -->
+<div id="bg1" class="bg"></div>
+<div id="bg2" class="bg"></div>
+<div class="overlay"></div>
 
-<!-- PAGE 2 -->
-<div id="page2" class="page hidden">
-  <div class="overlay"></div>
-  <div>
-    Every moment with you feels special ❤️<br><br>
-    <small>Tap to continue</small>
-  </div>
-</div>
-
-<!-- PAGE 3 -->
-<div id="page3" class="page hidden">
-  <div class="overlay"></div>
-  <div>
-    You make my world brighter and happier every day ❤️<br><br>
-    <small>Tap to continue</small>
-  </div>
-</div>
-
-<!-- PAGE 4 -->
-<div id="page4" class="page hidden">
-  <div class="overlay"></div>
-  <div>
-    <h1>Will you be my Valentine? ❤️</h1>
-    <button id="yesBtn">Yes ❤️</button>
-    <button id="noBtn">No 😢</button>
-  </div>
-</div>
+<!-- Content -->
+<div class="center" id="content"></div>
 
 <!-- MUSIC -->
 <audio id="bgMusic" loop>
@@ -154,40 +133,64 @@ button{
 </div>
 
 <script>
-/* ---------- PAGE FLOW ---------- */
-let page=1;
+/* ---------- PAGE DATA ---------- */
+const pages=[
+  {text:`For You ❤️<br><br><small>Tap to continue</small>`, bg:"black"},
+  {text:`Every moment with you feels special ❤️<br><br><small>Tap to continue</small>`, bg:"bg1.jpg"},
+  {text:`You make my world brighter and happier every day ❤️<br><br><small>Tap to continue</small>`, bg:"bg2.jpg"},
+  {text:`<h1>Will you be my Valentine? ❤️</h1>
+         <button id="yesBtn">Yes ❤️</button>
+         <button id="noBtn">No 😢</button>`, bg:"bg3.jpg"}
+];
 
-document.addEventListener("click",(e)=>{
-  // Start music on first tap
-  if(page===1) document.getElementById("bgMusic").play().catch(()=>{});
+let page=0;
+const content=document.getElementById("content");
+const bgA=document.getElementById("bg1");
+const bgB=document.getElementById("bg2");
+let topBg=bgA;
 
-  if(page<4){
-    document.getElementById("page"+page).classList.add("hidden");
-    page++;
-    document.getElementById("page"+page).classList.remove("hidden");
+/* ---------- RENDER PAGE ---------- */
+function renderPage(){
+  content.innerHTML=pages[page].text;
+
+  // Background crossfade
+  const nextBg = (topBg===bgA)?bgB:bgA;
+  nextBg.style.backgroundImage=`url('${pages[page].bg}')`;
+  nextBg.style.opacity=1;
+  topBg.style.opacity=0;
+  topBg=nextBg;
+
+  // Attach buttons if final page
+  if(page===3){
+    const noBtn=document.getElementById("noBtn");
+    const yesBtn=document.getElementById("yesBtn");
+
+    let attempts=0;
+    function moveNo(){
+      attempts++;
+      noBtn.style.left=Math.random()*(innerWidth-100)+"px";
+      noBtn.style.top=Math.random()*(innerHeight-50)+"px";
+      if(attempts>6) noBtn.style.display="none";
+    }
+    noBtn.onmouseover=moveNo;
+    noBtn.onclick=(e)=>{e.stopPropagation();moveNo();};
+
+    yesBtn.onclick=(e)=>{
+      e.stopPropagation();
+      createFirework(innerWidth/2,innerHeight/2);
+      setTimeout(()=>surprise.style.display="flex",700);
+    };
   }
+}
 
+renderPage();
+
+/* ---------- TAP FLOW ---------- */
+document.addEventListener("click",(e)=>{
+  if(page===0) document.getElementById("bgMusic").play().catch(()=>{});
+  if(page<3){ page++; renderPage(); }
   createFirework(e.clientX,e.clientY);
 });
-
-/* ---------- NO BUTTON ---------- */
-let attempts=0;
-const noBtn=document.getElementById("noBtn");
-function moveNo(){
-  attempts++;
-  noBtn.style.left=Math.random()*(innerWidth-100)+"px";
-  noBtn.style.top=Math.random()*(innerHeight-50)+"px";
-  if(attempts>6) noBtn.style.display="none";
-}
-noBtn.onmouseover=moveNo;
-noBtn.onclick=moveNo;
-
-/* ---------- YES ---------- */
-document.getElementById("yesBtn").onclick=(e)=>{
-  e.stopPropagation();
-  createFirework(innerWidth/2,innerHeight/2);
-  setTimeout(()=>surprise.style.display="flex",700);
-};
 
 /* ---------- HEARTS ---------- */
 const hearts=document.querySelector(".hearts");
