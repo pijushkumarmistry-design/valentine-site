@@ -6,6 +6,7 @@
 <title>Will You Be My Valentine?</title>
 
 <style>
+/* ---------- BODY ---------- */
 body{
   margin:0;
   height:100vh;
@@ -14,29 +15,31 @@ body{
   align-items:center;
   font-family:Arial, sans-serif;
   overflow:hidden;
+  position:relative;
 
-  /* Background Image */
+  /* Background image */
   background-image:url("background.jpg");
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
-  position:relative;
 }
 
-/* Dark overlay for readability */
+/* Dark overlay */
 body::before{
   content:"";
   position:absolute;
   inset:0;
-  background:rgba(0,0,0,0.35); /* increase to 0.5 for darker */
+  background:rgba(0,0,0,0.35);
   z-index:-1;
 }
 
-
+/* ---------- MAIN CONTAINER ---------- */
 .container{
   text-align:center;
+  color:white;
 }
 
+/* ---------- BUTTONS ---------- */
 button{
   padding:14px 24px;
   font-size:18px;
@@ -46,12 +49,18 @@ button{
   cursor:pointer;
 }
 
-#yesBtn{ background:#ff4d6d; color:white; }
-#noBtn{ background:#555; color:white; position:absolute; }
-</style>
-</head>
+#yesBtn{
+  background:#ff4d6d;
+  color:white;
+}
 
-/* Floating Hearts */
+#noBtn{
+  background:#555;
+  color:white;
+  position:absolute;
+}
+
+/* ---------- FLOATING HEARTS ---------- */
 .hearts{
   position:fixed;
   inset:0;
@@ -74,6 +83,8 @@ button{
     opacity:0;
   }
 }
+</style>
+</head>
 
 <body>
 
@@ -83,7 +94,11 @@ button{
   <button id="noBtn">No 😢</button>
 </div>
 
+<!-- Floating hearts container -->
+<div class="hearts"></div>
+
 <script>
+/* ---------- NO BUTTON MOVES ---------- */
 let noBtn = document.getElementById("noBtn");
 let attempts = 0;
 
@@ -97,10 +112,12 @@ function moveNo(){
 noBtn.onmouseover = moveNo;
 noBtn.onclick = moveNo;
 
+/* ---------- YES CLICK ---------- */
 document.getElementById("yesBtn").onclick = ()=>{
   alert("She said YES ❤️");
 };
-/* Floating Hearts Generator */
+
+/* ---------- FLOATING HEARTS ---------- */
 const hearts = document.querySelector(".hearts");
 
 setInterval(()=>{
@@ -114,7 +131,6 @@ setInterval(()=>{
 
   setTimeout(()=>h.remove(),7000);
 }, 300);
-
 </script>
 
 </body>
